@@ -1,10 +1,11 @@
-# miso-tavily
+package tavily
 
-```
-go get github.com/curtisnewbie/miso-tavily
-```
+import (
+	"testing"
 
-```go
+	"github.com/curtisnewbie/miso/flow"
+)
+
 func TestStreamResearch(t *testing.T) {
 	rail := flow.EmptyRail()
 	reportContent, err := StreamResearch(rail, "my-key", InitResearchReq{
@@ -19,4 +20,3 @@ func TestStreamResearch(t *testing.T) {
 	}
 	t.Log(reportContent)
 }
-```
