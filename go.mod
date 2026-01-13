@@ -1,6 +1,6 @@
 module github.com/curtisnewbie/miso-tavily
 
-go 1.25.4
+go 1.24.4
 
 require (
 	github.com/curtisnewbie/miso v0.4.11-0.20260113025225-4e2972a55d5f
