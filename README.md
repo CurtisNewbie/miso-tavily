@@ -13,6 +13,7 @@ func TestStreamResearch(t *testing.T) {
 		Model:          "mini",
 	}, WithProgressHook(func(rp ResearchProgress) error {
 		rail.Infof("Progress: %v - %v", rp.Name, rp.Arguments)
+		return nil
 	}))
 	if err != nil {
 		t.Fatal(err)
