@@ -45,32 +45,38 @@ type InitResearchReq struct {
 	Stream bool `json:"stream"`
 }
 
+type Choice struct {
+	Delta Delta `json:"delta"`
+}
+
+type Delta struct {
+	Content   string `json:"content"`
+	Role      string `json:"role"`
+	ToolCalls *struct {
+		ToolCall []ToolCall `json:"tool_call"`
+		Type     string     `json:"type"`
+	} `json:"tool_calls"`
+	Sources []struct {
+		Favicon string `json:"favicon"`
+		Title   string `json:"title"`
+		URL     string `json:"url"`
+	} `json:"sources"`
+}
+
+type ToolCall struct {
+	Arguments string   `json:"arguments"`
+	ID        string   `json:"id"`
+	Name      string   `json:"name"`
+	Queries   []string `json:"queries"`
+}
+
 // https://docs.tavily.com/documentation/api-reference/endpoint/research-streaming
 type StreamResearchEvent struct {
-	Choices []struct {
-		Delta struct {
-			Content   string `json:"content"`
-			Role      string `json:"role"`
-			ToolCalls *struct {
-				ToolCall []struct {
-					Arguments string   `json:"arguments"`
-					ID        string   `json:"id"`
-					Name      string   `json:"name"`
-					Queries   []string `json:"queries"`
-				} `json:"tool_call"`
-				Type string `json:"type"`
-			} `json:"tool_calls"`
-			Sources []struct {
-				Favicon string `json:"favicon"`
-				Title   string `json:"title"`
-				URL     string `json:"url"`
-			} `json:"sources"`
-		} `json:"delta"`
-	} `json:"choices"`
-	Created int64  `json:"created"`
-	ID      string `json:"id"`
-	Model   string `json:"model"`
-	Object  string `json:"object"`
+	Choices []Choice `json:"choices"`
+	Created int64    `json:"created"`
+	ID      string   `json:"id"`
+	Model   string   `json:"model"`
+	Object  string   `json:"object"`
 }
 
 type ResearchProgress struct {
