@@ -13,36 +13,38 @@ var (
 )
 
 type InitResearchReq struct {
-	CitationFormat string `json:"citation_format"` // numbered, mla, apa, chicago
-	Input          string `json:"input"`
-	Model          string `json:"model"` // mini, pro, auto
-	OutputSchema   *struct {
-		Properties struct {
-			Company struct {
-				Description string `json:"description"`
-				Type        string `json:"type"`
-			} `json:"company"`
-			FinancialDetails struct {
-				Description string `json:"description"`
-				Properties  struct {
-					OperatingIncome struct {
-						Description string `json:"description"`
-						Type        string `json:"type"`
-					} `json:"operating_income"`
-				} `json:"properties"`
+	CitationFormat string        `json:"citation_format"` // numbered, mla, apa, chicago
+	Input          string        `json:"input"`
+	Model          string        `json:"model"` // mini, pro, auto
+	OutputSchema   *OutputSchema `json:"output_schema"`
+	Stream         bool          `json:"stream"`
+}
+
+type OutputSchema struct {
+	Properties struct {
+		Company struct {
+			Description string `json:"description"`
+			Type        string `json:"type"`
+		} `json:"company"`
+		FinancialDetails struct {
+			Description string `json:"description"`
+			Properties  struct {
+				OperatingIncome struct {
+					Description string `json:"description"`
+					Type        string `json:"type"`
+				} `json:"operating_income"`
+			} `json:"properties"`
+			Type string `json:"type"`
+		} `json:"financial_details"`
+		KeyMetrics struct {
+			Description string `json:"description"`
+			Items       struct {
 				Type string `json:"type"`
-			} `json:"financial_details"`
-			KeyMetrics struct {
-				Description string `json:"description"`
-				Items       struct {
-					Type string `json:"type"`
-				} `json:"items"`
-				Type string `json:"type"`
-			} `json:"key_metrics"`
-		} `json:"properties"`
-		Required []string `json:"required"`
-	} `json:"output_schema"`
-	Stream bool `json:"stream"`
+			} `json:"items"`
+			Type string `json:"type"`
+		} `json:"key_metrics"`
+	} `json:"properties"`
+	Required []string `json:"required"`
 }
 
 type Choice struct {
