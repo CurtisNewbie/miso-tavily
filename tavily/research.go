@@ -84,13 +84,15 @@ type streamResearchOp struct {
 	ProgressHook ProgressHook
 }
 
-func WithProgressHook(p ProgressHook) func(o *streamResearchOp) {
+func WithProgressHook(p ProgressHook) StreamResearchOpFunc {
 	return func(o *streamResearchOp) {
 		o.ProgressHook = p
 	}
 }
 
-func StreamResearch(rail miso.Rail, apiKey string, req InitResearchReq, ops ...func(o *streamResearchOp)) (string, error) {
+type StreamResearchOpFunc func(o *streamResearchOp)
+
+func StreamResearch(rail miso.Rail, apiKey string, req InitResearchReq, ops ...StreamResearchOpFunc) (string, error) {
 	if req.Input == "" {
 		return "", errs.NewErrf("Input required")
 	}
