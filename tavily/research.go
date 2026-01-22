@@ -58,11 +58,13 @@ type Delta struct {
 		ToolCall []ToolCall `json:"tool_call"`
 		Type     string     `json:"type"`
 	} `json:"tool_calls"`
-	Sources []struct {
-		Favicon string `json:"favicon"`
-		Title   string `json:"title"`
-		URL     string `json:"url"`
-	} `json:"sources"`
+	Sources []Source `json:"sources"`
+}
+
+type Source struct {
+	Favicon string `json:"favicon"`
+	Title   string `json:"title"`
+	URL     string `json:"url"`
 }
 
 type ToolCall struct {
@@ -86,15 +88,24 @@ type ResearchProgress struct {
 	Arguments string
 	Queries   []string
 }
+
 type ProgressHook func(ResearchProgress) error
+type SourceHook func([]Source) error
 
 type streamResearchOp struct {
 	ProgressHook ProgressHook
+	SourceHook   SourceHook
 }
 
 func WithProgressHook(p ProgressHook) StreamResearchOpFunc {
 	return func(o *streamResearchOp) {
 		o.ProgressHook = p
+	}
+}
+
+func WithSourceHook(p SourceHook) StreamResearchOpFunc {
+	return func(o *streamResearchOp) {
+		o.SourceHook = p
 	}
 }
 
@@ -142,6 +153,27 @@ func StreamResearch(rail miso.Rail, apiKey string, req InitResearchReq, ops ...S
 					}
 				}
 				return true, nil
+			case "sources":
+				sre, err := json.SParseJsonAs[StreamResearchEvent](e.Data)
+				if err != nil {
+					return false, err
+				}
+
+				if sro.SourceHook != nil {
+					n := 0
+					for _, c := range sre.Choices {
+						n += len(c.Delta.Sources)
+					}
+					s := make([]Source, 0, n)
+					for _, c := range sre.Choices {
+						for _, v := range c.Delta.Sources {
+							s = append(s, v)
+						}
+					}
+					if err := sro.SourceHook(s); err != nil {
+						return true, err
+					}
+				}
 			default:
 				sre, err := json.SParseJsonAs[StreamResearchEvent](e.Data)
 				if err != nil {
