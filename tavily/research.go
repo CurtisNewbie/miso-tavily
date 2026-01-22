@@ -153,7 +153,7 @@ func StreamResearch(rail miso.Rail, apiKey string, req InitResearchReq, ops ...S
 					}
 				}
 				return true, nil
-			case "sources":
+			default:
 				sre, err := json.SParseJsonAs[StreamResearchEvent](e.Data)
 				if err != nil {
 					return false, err
@@ -164,20 +164,17 @@ func StreamResearch(rail miso.Rail, apiKey string, req InitResearchReq, ops ...S
 					for _, c := range sre.Choices {
 						n += len(c.Delta.Sources)
 					}
-					s := make([]Source, 0, n)
-					for _, c := range sre.Choices {
-						for _, v := range c.Delta.Sources {
-							s = append(s, v)
+					if n > 0 {
+						s := make([]Source, 0, n)
+						for _, c := range sre.Choices {
+							for _, v := range c.Delta.Sources {
+								s = append(s, v)
+							}
+						}
+						if err := sro.SourceHook(s); err != nil {
+							return true, err
 						}
 					}
-					if err := sro.SourceHook(s); err != nil {
-						return true, err
-					}
-				}
-			default:
-				sre, err := json.SParseJsonAs[StreamResearchEvent](e.Data)
-				if err != nil {
-					return false, err
 				}
 
 				for _, c := range sre.Choices {
